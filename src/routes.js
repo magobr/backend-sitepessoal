@@ -20,12 +20,36 @@ routes.get('/users/:id?', (req, res) =>{
     });
 });
 
+routes.post('/login', (req, res) =>{
+    var dados = req.body;
+    select.getLogin(dados, (err, response) =>{
+        if (response.length > 0){
+            req.session.login = true;
+            req.session.user = dados.name;
+            console.log(req.session.login);
+            res.setHeader('Content-Type', 'text/html')
+            res.json(response);
+            console.log('Logado');
+        } else {
+            console.log('login incorreto');
+            res.end();
+        }
+
+        
+    })
+})
+
 routes.post('/saveuser', (req, res) => {
     var dados = req.body;
-    create.userCreate(dados, (err, response) => {
-        res.json(req.body);
-        console.log(dados);
-    });
+    if (req.session.login){
+        create.userCreate(dados, (err, response) => {
+            res.json(req.body);
+            console.log(dados);
+        });
+    } else{
+        console.log('Faça o login');
+        res.end()
+    }
 });
 
 routes.delete('/usersDelete/:id', (req, res) =>{

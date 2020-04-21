@@ -7,6 +7,9 @@ var queryResult = {
     },
     getDadosById:function(id, callback){
         connection.query('SELECT * FROM dados where id = ?', id, callback)
+    },
+    getLogin:function(dados, callback) {
+        connection.query('SELECT * FROM dados WHERE nome = ? AND pass = ?', [dados.name, dados.pass], callback)
     }
 }
 
