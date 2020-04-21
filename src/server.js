@@ -11,7 +11,9 @@ app.use(session({
     secret: "ssh, its a secret!",
     resave: false,
     saveUninitialized: true,
-    cookie: {secure: true}
+    cookie: {
+        maxAge: 4000000
+    }
 }));
 
 app.use(express.json());

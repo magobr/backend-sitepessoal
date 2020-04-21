@@ -24,9 +24,8 @@ routes.post('/login', (req, res) =>{
     var dados = req.body;
     select.getLogin(dados, (err, response) =>{
         if (response.length > 0){
-            req.session.login = true;
+            req.session.loggedin = true;
             req.session.user = dados.name;
-            console.log(req.session.login);
             res.setHeader('Content-Type', 'text/html')
             res.json(response);
             console.log('Logado');
@@ -41,7 +40,8 @@ routes.post('/login', (req, res) =>{
 
 routes.post('/saveuser', (req, res) => {
     var dados = req.body;
-    if (req.session.login){
+    console.log(req.session.loggedin);
+    if (req.session.loggedin){
         create.userCreate(dados, (err, response) => {
             res.json(req.body);
             console.log(dados);
@@ -54,10 +54,15 @@ routes.post('/saveuser', (req, res) => {
 
 routes.delete('/usersDelete/:id', (req, res) =>{
     var id = req.params.id; 
-    dataDelete.userDelete(id, (err, count) =>{
-        console.log(id);
-        res.json(count);
-    })
+    if(req.session.loggedin){
+        dataDelete.userDelete(id, (err, count) =>{
+            console.log(id);
+            res.json(count);
+        })
+    } else {
+        console.log('Faça o login');
+        res.end()
+    }
 })
 
 routes.put('/usersUpdate/:id', (req, res) => {
