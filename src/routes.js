@@ -8,10 +8,10 @@ const dataUpdate = require('./models/update');
 const routes = express.Router();
 
 routes.get('/users', (req, res) => {
-        select.getDados((err, response) =>{
-            if(err)throw err;
-            res.json(response)
-        });
+    select.getDados((err, response) =>{
+        if(err)throw err;
+        res.json(response)
+    });
 });
 
 routes.get('/users/:id?', (req, res) =>{
