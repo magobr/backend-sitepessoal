@@ -1,8 +1,20 @@
 const express = require('express');
+const session = require('express-session');
+
 const routes = require('./routes');
 
 
+
 const app = express();
+
+app.use(session({
+    secret: "ssh, its a secret!",
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        maxAge: 4000000
+    }
+}));
 
 app.use(express.json());
 app.use(routes);

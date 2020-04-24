@@ -9,39 +9,91 @@ const routes = express.Router();
 
 routes.get('/users', (req, res) => {
     select.getDados((err, response) =>{
+        if(err)throw err;
         res.json(response)
     });
 });
 
 routes.get('/users/:id?', (req, res) =>{
+
     console.log(req.params.id);
     select.getDadosById(req.params.id, (err, response) =>{
+        if(err) throw err
         res.json(response)
     });
+
 });
 
-routes.post('/saveuser', (req, res) => {
+routes.post('/login', (req, res) =>{
+
     var dados = req.body;
-    create.userCreate(dados, (err, response) => {
-        res.json(req.body);
-        console.log(dados);
-    });
-});
 
-routes.delete('/usersDelete/:id', (req, res) =>{
-    var id = req.params.id; 
-    dataDelete.userDelete(id, (err, count) =>{
-        console.log(id);
-        res.json(count);
+    select.getLogin(dados, (err, response) =>{
+        if (response.length > 0){
+            req.session.loggedin = true;
+            req.session.user = dados.name;
+            res.setHeader('Content-Type', 'text/html')
+            res.json(response);
+            console.log('Logado');
+        } else {
+            console.log('login incorreto');
+            res.end();
+        } if (err){
+            throw err;
+        }
     })
 })
 
+routes.post('/saveuser', (req, res) => {
+
+    var dados = req.body;
+
+    console.log(req.session.loggedin);
+
+    if (req.session.loggedin){
+        create.userCreate(dados, (err, response) => {
+            if (err) throw err;
+            res.json(response);
+            console.log(dados);
+        });
+    } else{
+        console.log('Faça o login');
+        res.end()
+    }
+
+});
+
+routes.delete('/usersDelete/:id', (req, res) =>{
+
+    var id = req.params.id; 
+
+    if(req.session.loggedin){
+        dataDelete.userDelete(id, (err, count) =>{
+            console.log(id);
+            res.json(count);
+        })
+    } else {
+        console.log('Faça o login');
+        res.end()
+    }
+
+})
+
 routes.put('/usersUpdate/:id', (req, res) => {
+    
+
     var id = req.params.id;
     var data = req.body
-    dataUpdate.userUpdate(data, id, (err, response) =>{
-        res.json(response);
-    });
+
+    if(req.session.loggedin){
+        dataUpdate.userUpdate(data, id, (err, response) =>{
+            res.json(response);
+        });
+    } else{
+        console.log('Faça o login');
+        res.end()
+    }
+
 });
 
 module.exports = routes;
